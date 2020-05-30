@@ -5,18 +5,20 @@ import {questions as QUESTIONS} from "./questions";
 import {fromEvent, timer} from "rxjs";
 import {map, tap} from "rxjs/operators";
 import {keyCombo} from "../Utils/combo";
+import {useScore} from "../contexts/ScoreContext";
 
 // Todo: some more obvious effect of scoring , green box when user enters correct
 // Todo: Which category of Vim thing to practice on
 // Todo: when shown, allow hover to show tooltip - 'hide'
+// Todo: fix delayed navigation
 
 function Game({history}) {
-	const [score, setScore] = useState(0);
+	const [score, setScore] = useScore();
 	const [showingAnswer, setShowAnswer] = useState(false);
 	const questionsLength = Object.entries(QUESTIONS).length;
 	const QUESTION_MILISECONDS = 3000;
 	const [currentQuestion, setCurrentQuestion] = useState(['','']);
-	const MAX_SECONDS = 500;
+	const MAX_SECONDS = 10;
 	const [ms, setMs] = useState(0);
 	const [seconds, setSeconds] = useState(MAX_SECONDS);
 	const keyWatcherRef = useRef(fromEvent(document, "keypress").pipe(
@@ -28,6 +30,10 @@ function Game({history}) {
 		setCurrentQuestion(questions[randomQuestionIndex]);
 	}, [questionsLength])
 
+	useEffect(() => {
+		setScore(0)
+	},[setScore])
+
 	const updateTime = useCallback((startTime) => {
 		const endTime = new Date();
 		const msPassedStr = (endTime.getTime() - startTime.getTime()).toString();
@@ -38,34 +44,20 @@ function Game({history}) {
 		const updatedMs = 1000 - parseInt(formattedMSString.substring(formattedMSString.length - 3));
 		setSeconds(addLeadingZeros(updatedSeconds, 3))
 		setMs(addLeadingZeros(updatedMs, 3))
-	}, [])
+	}, []);
 
 	const addLeadingZeros = (num, length) => {
 		let zeros = '';
 		for (let i = 0; i < length; i++) {
 			zeros += '0'
 		}
+		// console.log((zeros + num)) , if seconds <= -1, but setSeconds length 3 doesnt work, dk y
 		return (zeros + num).slice(-length);
 	}
 
 	const showAnswer = useCallback(() => {
 		setShowAnswer(!showingAnswer);
 	}, [showingAnswer])
-
-	useEffect(() => {
-		const currentTime = new Date();
-		const questionInterval = timer(0,QUESTION_MILISECONDS)
-				.pipe(
-						tap(() => {
-							setRandomQuestion();
-						})
-				).subscribe();
-		const interval = setInterval(() => updateTime(currentTime), 1);
-		return () => {
-			questionInterval.unsubscribe();
-			clearInterval(interval);
-		}
-	}, [setRandomQuestion, updateTime, score]);
 
 	useEffect(() => {
 		let keyWatcherSub;
@@ -81,10 +73,30 @@ function Game({history}) {
 				keyWatcherSub.unsubscribe();
 			}
 		}
-	}, [currentQuestion])
+	}, [currentQuestion, setScore])
 
 	useEffect(() => {
-		if (seconds <= -1) {
+		const questionInterval = timer(0,QUESTION_MILISECONDS)
+				.pipe(
+						tap(() => {
+							setRandomQuestion();
+						})
+				).subscribe();
+		return () => {
+			questionInterval.unsubscribe();
+		}
+	}, [setRandomQuestion, score]);
+
+	useEffect(() => {
+		const currentTime = new Date();
+		const interval = setInterval(() => updateTime(currentTime), 1);
+		return () => {
+			clearInterval(interval);
+		}
+	}, [updateTime])
+
+	useEffect(() => {
+		if (parseInt(seconds) <= 0) {
 			// Todo: Save the score
 			history.push('/gameOver');
 		}
