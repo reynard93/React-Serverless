@@ -14,11 +14,18 @@ export const Styledtimer = styled.p`
 	font-size: 1.5rem;
 	grid-column: 3;
 `
-
 export const StyledCharacter = styled.p`
-	font-size: 15rem;
+	font-size: 9rem;
 	grid-row: 2;
 	grid-column: 1/4;
 	text-align: center;
 	color: #e16365;
+`
+export const StyledShowAnswer = styled.button`
+	grid-column: 2;
+	margin: 0 auto;
+	font-size: 1.5rem;
+	padding: 2rem;
+	line-height: 0;
+	min-width: fit-content;
 `

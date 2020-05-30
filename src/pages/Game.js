@@ -1,23 +1,32 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {StyledCharacter, StyledGame, StyledScore, Styledtimer} from "../styled/Game";
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {StyledCharacter, StyledGame, StyledScore, StyledShowAnswer, Styledtimer} from "../styled/Game";
 import {Strong} from "../styled/Random";
 import {questions as QUESTIONS} from "./questions";
+import {fromEvent, timer} from "rxjs";
+import {map, tap} from "rxjs/operators";
+import {keyCombo} from "../Utils/combo";
+
+// Todo: some more obvious effect of scoring , green box when user enters correct
+// Todo: Which category of Vim thing to practice on
+// Todo: when shown, allow hover to show tooltip - 'hide'
 
 function Game({history}) {
 	const [score, setScore] = useState(0);
-	const questions = Object.entries(QUESTIONS);
-	const questionsLength = 38;
+	const [showingAnswer, setShowAnswer] = useState(false);
+	const questionsLength = Object.entries(QUESTIONS).length;
+	const QUESTION_MILISECONDS = 3000;
 	const [currentQuestion, setCurrentQuestion] = useState(['','']);
-	const MAX_SECONDS = 100;
+	const MAX_SECONDS = 500;
 	const [ms, setMs] = useState(0);
 	const [seconds, setSeconds] = useState(MAX_SECONDS);
+	const keyWatcherRef = useRef(fromEvent(document, "keypress").pipe(
+			map(event => event.key)))
 
 	const setRandomQuestion = useCallback(() => {
+		const questions = Object.entries(QUESTIONS);
 		const randomQuestionIndex = Math.floor(Math.random() * questionsLength);
-		console.log(questions, 'hjave questiosn ehre??')
-		console.log(randomQuestionIndex, 'what my indedx')
 		setCurrentQuestion(questions[randomQuestionIndex]);
-	}, [questions])
+	}, [questionsLength])
 
 	const updateTime = useCallback((startTime) => {
 		const endTime = new Date();
@@ -27,10 +36,9 @@ function Game({history}) {
 		// 00000 - first 2 are seconds, last 3 are the ms that have passed
 		const updatedSeconds = MAX_SECONDS - parseInt(formattedMSString.substring(0, 2)) - 1;
 		const updatedMs = 1000 - parseInt(formattedMSString.substring(formattedMSString.length - 3));
-		setSeconds(addLeadingZeros(updatedSeconds, 2))
+		setSeconds(addLeadingZeros(updatedSeconds, 3))
 		setMs(addLeadingZeros(updatedMs, 3))
 	}, [])
-
 
 	const addLeadingZeros = (num, length) => {
 		let zeros = '';
@@ -40,37 +48,52 @@ function Game({history}) {
 		return (zeros + num).slice(-length);
 	}
 
-		useEffect(() => {
-			const currentTime = new Date();
-			const questionInterval = setInterval(() => setRandomQuestion(), 2000); // to be adjusted frm ui
-			const interval = setInterval(() => updateTime(currentTime), 1);
-			return () => {
-				clearInterval(questionInterval);
-				clearInterval(interval);
-			}
-		}, [setRandomQuestion, updateTime]);
-
-		useEffect(() => {
-			if (seconds <= -1) {
-				console.log('/gameOver');
-				history.push('/gameOver');
-			}
-		}, [seconds, ms, history, questions])
-
-	const keyUpHandler = (e) => {
-			console.log(e.key);
-	}
+	const showAnswer = useCallback(() => {
+		setShowAnswer(!showingAnswer);
+	}, [showingAnswer])
 
 	useEffect(() => {
-		document.addEventListener('keyup', keyUpHandler)
+		const currentTime = new Date();
+		const questionInterval = timer(0,QUESTION_MILISECONDS)
+				.pipe(
+						tap(() => {
+							setRandomQuestion();
+						})
+				).subscribe();
+		const interval = setInterval(() => updateTime(currentTime), 1);
 		return () => {
-			document.removeEventListener('keyup', keyUpHandler);
+			questionInterval.unsubscribe();
+			clearInterval(interval);
 		}
-	}, [])
+	}, [setRandomQuestion, updateTime, score]);
+
+	useEffect(() => {
+		let keyWatcherSub;
+		if (currentQuestion) {
+			keyWatcherSub = keyCombo(currentQuestion[0].split(''), keyWatcherRef.current)
+					.subscribe((res) => {
+						setScore((prevScore) => prevScore + 1);
+						console.log(res, ' success in executing combo');
+					});
+		}
+		return () => {
+			if (keyWatcherSub) {
+				keyWatcherSub.unsubscribe();
+			}
+		}
+	}, [currentQuestion])
+
+	useEffect(() => {
+		if (seconds <= -1) {
+			// Todo: Save the score
+			history.push('/gameOver');
+		}
+	}, [seconds, ms, history])
 
 	return (
 			<StyledGame>
 				<StyledScore>Score: <Strong>{score}</Strong></StyledScore>
+				<StyledShowAnswer onClick={showAnswer}>{showingAnswer ? currentQuestion[0] : 'SHOW'}</StyledShowAnswer>
 				<StyledCharacter>{currentQuestion[1]}</StyledCharacter>
 				<Styledtimer>Time: <Strong>{seconds}: {ms}</Strong></Styledtimer>
 			</StyledGame>
