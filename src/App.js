@@ -20,7 +20,7 @@ function App() {
             <Route path="/game" component={Game}/>
             <Route path="/highScores" component={HighScores}/>
             <Route path="/gameOver" component={GameOver}/>
-            <Route path="/home" component={Home}/>
+            <Route path="/" component={Home}/>
           </Switch>
         </Container>
       </Main>
