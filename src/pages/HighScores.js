@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {ScoreLI, ScoresList} from "../styled/HighScores";
+import {StyledTitle} from "../styled/Random";
 
 function HighScores(props) {
 	const [highScores, setHighScores] = useState([]);
@@ -18,10 +19,11 @@ function HighScores(props) {
 	}, [])
 	return (
 			<div>
-				<h1>HighScores</h1>
+				<StyledTitle>HighScores</StyledTitle>
 				<ScoresList>
-					{highScores.map(score => (
-							<ScoreLI key={score.id}>{score.fields.name} - {score.fields.score}</ScoreLI>
+					{highScores.map((score, index) => (
+							<ScoreLI key={score.id}>
+								{index + 1}. {score.fields.name} - {score.fields.score}</ScoreLI>
 					))}
 				</ScoresList>
 			</div>

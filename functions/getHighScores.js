@@ -1,4 +1,4 @@
-const {table, getHighScores} = require("./utils/airtable")
+const {getHighScores} = require("./utils/airtable")
 
 exports.handler = async (event) => {
 	try {
