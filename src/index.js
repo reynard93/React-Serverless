@@ -23,7 +23,9 @@ ReactDOM.render(
         client_id={config.clientId}
         redirect_uri={window.location.origin}
         onRedirectCallback={onRedirectCallback}
+        audience={config.audience}
     >
+      {/*audience to get jwt which we can then send to api created on oauth*/}
       <ScoreProvider>
         <App />
       </ScoreProvider>

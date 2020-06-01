@@ -1,4 +1,5 @@
 {
   "domain": "vim-typing-game.auth0.com",
-  "clientId": "SIhM2oeLNvyHiVeszVlc58852GXEDnvf"
+  "clientId": "SIhM2oeLNvyHiVeszVlc58852GXEDnvf",
+  "audience": "https://learnvimbytypingrey/"
 }

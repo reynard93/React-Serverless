@@ -1,10 +1,8 @@
 import React from 'react';
 import CTA from "../styled/CTA";
 import {Accent, StyledTitle} from "../styled/Random";
-import {useAuth0} from "../auth";
 
 function Home(props) {
-	const {user} = useAuth0();
 	return (
 			<div>
 				<StyledTitle>Ready to type?</StyledTitle>
@@ -14,3 +12,4 @@ function Home(props) {
 }
 
 export default Home;
+
