@@ -4,7 +4,7 @@ import {Strong} from "../styled/Random";
 import {questions as QUESTIONS} from "./questions";
 import {fromEvent, timer} from "rxjs";
 import {map, tap} from "rxjs/operators";
-import {keyCombo} from "../Utils/combo";
+import {keyCombo} from "../utils/combo";
 import {useScore} from "../contexts/ScoreContext";
 
 // Todo: some more obvious effect of scoring , green box when user enters correct
