@@ -9,6 +9,7 @@ function HighScores(props) {
 		const loadHighScores = async() => {
 			try {
 				const res = await fetch('/.netlify/functions/getHighScores');
+				console.log('waht res', res)
 				const scores = await res.json();
 				setHighScores(scores);
 			} catch(err) {
