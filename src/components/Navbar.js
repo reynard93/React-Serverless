@@ -3,8 +3,9 @@ import {Link} from "react-router-dom";
 import {StyledLink, StyledNavbar, StyledNavBrand, StyledNavItems} from "../styled/Navbar";
 import {Accent} from "../styled/Random";
 import {useAuth0} from "../auth";
+import useTheme from "../hooks/UseTheme";
 
-function Navbar(props) {
+function Navbar({toggleTheme}) {
 	const {isAuthenticated, loginWithRedirect, logout} = useAuth0();
 	return (
 			<StyledNavbar>
@@ -26,6 +27,9 @@ function Navbar(props) {
 								<button onClick={logout}>Logout</button>
 							</li>
 					)}
+					<button onClick={toggleTheme}>
+						Toggle Theme
+					</button>
 				</StyledNavItems>
 			</StyledNavbar>
 	);
