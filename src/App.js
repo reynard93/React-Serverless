@@ -9,11 +9,16 @@ import {Container} from "./styled/Container";
 import {Main} from "./styled/Main";
 import Global from "./styled/Global";
 import {useAuth0} from "./auth";
+import {ThemeProvider} from "styled-components";
+import {lightTheme, darkTheme} from "./styled/Themes";
 
 function App() {
   const {loading} = useAuth0();
+  const theme = "light";
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
   return (
     <Router>
+      <ThemeProvider theme={currentTheme}>
       <Global/>
       <Main>
         { loading && <p>Loading...</p>}
@@ -29,6 +34,7 @@ function App() {
           </Container>
         }
       </Main>
+      </ThemeProvider>
     </Router>
   )
 }
