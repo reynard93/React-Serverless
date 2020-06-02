@@ -12,20 +12,22 @@ import {useAuth0} from "./auth";
 
 function App() {
   const {loading} = useAuth0();
-  if (loading) return <p>Loading...</p>
   return (
     <Router>
       <Global/>
       <Main>
-        <Container>
-          <Navbar/>
-          <Switch>
-            <Route path="/game" component={Game}/>
-            <Route path="/highScores" component={HighScores}/>
-            <Route path="/gameOver" component={GameOver}/>
-            <Route path="/" component={Home}/>
-          </Switch>
-        </Container>
+        { loading && <p>Loading...</p>}
+        {!loading &&
+          <Container>
+            <Navbar/>
+            <Switch>
+              <Route path="/game" component={Game}/>
+              <Route path="/highScores" component={HighScores}/>
+              <Route path="/gameOver" component={GameOver}/>
+              <Route path="/" component={Home}/>
+            </Switch>
+          </Container>
+        }
       </Main>
     </Router>
   )

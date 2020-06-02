@@ -19,7 +19,7 @@ export const StyledCharacter = styled.p`
 	grid-row: 2;
 	grid-column: 1/4;
 	text-align: center;
-	color: #e16365;
+	color: var(--accent-color);
 `
 export const StyledShowAnswer = styled.button`
 	grid-column: 2;
