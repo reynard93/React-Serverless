@@ -1,9 +1,9 @@
 import React from 'react';
 import {Link} from "react-router-dom";
-import {StyledLink, StyledNavbar, StyledNavBrand, StyledNavItems} from "../styled/Navbar";
+import {StyledLink, StyledNavbar, StyledNavBrand, StyledNavItems, StyledButtonLink} from "../styled/Navbar";
 import {Accent} from "../styled/Random";
 import {useAuth0} from "../auth";
-import useTheme from "../hooks/UseTheme";
+import {StyledButton} from "../styled/Buttons";
 
 function Navbar({toggleTheme}) {
 	const {isAuthenticated, loginWithRedirect, logout} = useAuth0();
@@ -19,17 +19,17 @@ function Navbar({toggleTheme}) {
 					<li><StyledLink to={"/highScores"}>HighScore</StyledLink></li>
 					{!isAuthenticated && (
 							<li>
-								<button onClick={loginWithRedirect}>Login</button>
+								<StyledButtonLink onClick={loginWithRedirect}>Login</StyledButtonLink>
 							</li>
 					)}
 					{isAuthenticated && (
 							<li>
-								<button onClick={logout}>Logout</button>
+								<StyledButtonLink onClick={logout}>Logout</StyledButtonLink>
 							</li>
 					)}
-					<button onClick={toggleTheme}>
+					<StyledButton onClick={toggleTheme}>
 						Toggle Theme
-					</button>
+					</StyledButton>
 				</StyledNavItems>
 			</StyledNavbar>
 	);
